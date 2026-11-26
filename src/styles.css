@@ -516,6 +516,17 @@ h2 {
     text-transform: capitalize
 }
 
+.changeWindow {
+    display: block;
+    margin-top: 7px;
+    color: #a47b34;
+    font-size: 11px
+}
+
+.changeWindow.expired {
+    color: #9a9a92
+}
+
 .reviews {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
