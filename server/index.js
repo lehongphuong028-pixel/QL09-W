@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 
 const app = express(); app.use(cors()); app.use(express.json());
@@ -124,7 +125,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(__dirname, '..', 'dist');
 app.use(express.static(dist));
 app.use((req, r) => { if (req.path.startsWith('/api/')) return r.status(404).json({ error: 'API not found' }); r.sendFile(path.join(dist, 'index.html')) });
-app.listen(port, () => console.log(`QL09-W API: http://localhost:${port}`));
+if (!process.env.VERCEL) {
+    app.listen(port, '0.0.0.0', () => {
+        console.log(`QL09-W web & API: http://localhost:${port}`);
+        for (const addresses of Object.values(os.networkInterfaces())) {
+            for (const address of addresses || []) {
+                if (address.family === 'IPv4' && !address.internal) {
+                    console.log(`LAN: http://${address.address}:${port}`);
+                }
+            }
+        }
+    });
+}
+
+export default app;
 
 const liveClients = new Set();
 const broadcastLive = () => {
